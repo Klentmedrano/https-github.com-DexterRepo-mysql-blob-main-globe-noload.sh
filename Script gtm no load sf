@@ -50,12 +50,12 @@ fi
 count=1
 
 check(){
-  local border_color="\e[31m"  # Light red color
-  local success_color="\e[32m"  # Light green color
-  local fail_color="\e[94m"    # Light blue color
+  local border_color="\e[34m"  # Light blue color
+  local success_color="\e[31m"  # Light red color
+  local fail_color="\e[32m"    # Light green color
   local header_color="\e[93m"  # Light cyan color
   local reset_color="\e[0m"    # Reset to default terminal color
-  local padding="  "            # Padding for aesthetic
+  local padding="\e[32"            # Padding for aesthetic
 
   # Header
   echo -e "${border_color}█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
@@ -157,4 +157,4 @@ while true; do
   sleep $LOOP_DELAY
 done
 
-exit 
+exit 0
