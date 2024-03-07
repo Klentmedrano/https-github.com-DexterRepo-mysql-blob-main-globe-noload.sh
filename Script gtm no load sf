@@ -50,8 +50,8 @@ fi
 count=1
 
 check(){
-  local border_color="\e[94m"  # Light blue color
-  local success_color="\e[94m"  # Light blue color
+  local border_color="\e[31m"  # Light red color
+  local success_color="\e[32m"  # Light green color
   local fail_color="\e[94m"    # Light blue color
   local header_color="\e[93m"  # Light cyan color
   local reset_color="\e[0m"    # Reset to default terminal color
@@ -62,7 +62,7 @@ check(){
 █░░╦─╦╔╗╦─╔╗╔╗╔╦╗╔╗░░█
 █░░║║║╠─║─║─║║║║║╠─░░█
 █░░╚╩╝╚╝╚╝╚╝╚╝╩─╩╚╝░░█
-█▄ SF VPN  SCRIPT DNS▄█
+█▄SF VPN  SCRIPT DNS▄█
 
 {reset_color}"
   echo -e "${border_color}│${header_color}${padding}SF VPN DNS Status Check Results${padding}${reset_color}"
@@ -157,4 +157,4 @@ while true; do
   sleep $LOOP_DELAY
 done
 
-exit 0
+exit 
