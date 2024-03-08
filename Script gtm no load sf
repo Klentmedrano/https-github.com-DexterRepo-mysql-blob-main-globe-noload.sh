@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Copyright ©UDPTeam
+## Copyright Â©UDPTeam
 
 ## Discord: [URL]https://discord.gg/civ3[/URL]
 
@@ -43,7 +43,7 @@ CUSTOM_DIG=/data/data/com.termux/files/home/go/bin/fastdig
 VER=0.1
 
 # Define text color codes
-GREEN='\e[32m'
+PURPLE='\e[35m'
 RED='\e[31m'
 RESET='\e[0m'
 
@@ -64,7 +64,7 @@ fi
 # Function to check DNS resolution and ping DNS nameservers
 check() {
     for host in "${HOSTS[@]}"; do
-        (timeout -k 3 3 ${_DIG} @"$host" "$A" && echo -e "${GREEN}Host $host: DNS resolution successful.${RESET}") || echo -e "${RED}Host $host: DNS resolution failed.${RESET}"
+        (timeout -k 3 3 ${_DIG} @"$host" "$A" && echo -e "${PURPLE}Host $host: DNS resolution successful.${RESET}") || echo -e "${RED}Host $host: DNS resolution failed.${RESET}"
     done
 
     # Add DNS nameservers and host IPs to check with ping
@@ -72,7 +72,7 @@ check() {
 
     for target in "${PING_TARGETS[@]}"; do
         if ping -c 1 -W 2 "$target" &>/dev/null; then
-            echo -e "${GREEN}Ping to $target: Success.${RESET}"
+            echo -e "${PURPLE}Ping to $target: Success.${RESET}"
         else
             echo -e "${RED}Ping to $target: Failed.${RESET}"
         fi
@@ -85,6 +85,6 @@ echo "CTRL + C to close script"
 
 while true; do
     check
-    echo -SF VPN V2 OFFICIAL-
+    echo -ðŸ‡µðŸ‡­SF VPN V2ðŸ‡µðŸ‡­ OFFICIAL-
     sleep ${LOOP_DELAY}
 done
