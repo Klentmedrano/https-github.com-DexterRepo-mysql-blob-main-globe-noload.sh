@@ -12,18 +12,18 @@
 
 ## Repeat dig command loop time (seconds) (positive integer only)
 
-LOOP_DELAY=1  # Set the loop delay to 5 second
+LOOP_DELAY=1  # Set the loop delay to 1 second
 
 ## Your DNSTT Nameserver & your Domain `A` Record
 
 NS='ns.rico.hashi-rama.com'
-NS1='ns.rico.hashi-rama.com'
+NS1='ns.kaisen.ismaelsakalam.online'
 NS2='ns.rico.hashi-rama.com'
 A='ns.rico.hashi-rama.com'
 
 ## Add your DNS here
 
-declare -a HOSTS=('112.198.115.60' '112.198.115.36' '124.6.181.12' '124.6.181.36' '112.198.115.44' '124.6.181.4' '124.6.181.44')
+declare -a HOSTS=('112.198.115.60' '112.198.115.60' '112.198.115.36' '124.6.181.12' '124.6.181.36' '112.198.115.44' '124.6.181.4' '124.6.181.44')
 
 ## Linux' dig command executable filepath
 ## Select value: "CUSTOM|C" or "DEFAULT|D"
@@ -43,8 +43,8 @@ CUSTOM_DIG=/data/data/com.termux/files/home/go/bin/fastdig
 VER=0.1
 
 # Define text color codes
-BLUE='\e[44m'
-BLUE='\e[44m'
+GREEN='\e[32m'
+RED='\e[31m'
 RESET='\e[0m'
 
 case "${DIG_EXEC}" in
@@ -85,6 +85,6 @@ echo "CTRL + C to close script"
 
 while true; do
     check
-    echo -ᴊαмαѕ σffι¢ιαℓ fяєєιиуєяиєт-
+    echo -🇵🇭SF VPN V2🇵🇭 OFFICIAL-
     sleep ${LOOP_DELAY}
 done
