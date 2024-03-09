@@ -48,7 +48,7 @@ VER=0.1
 # Define text color codes
 PINK='\e[38m'
 RED='\e[31m'
-RESET='\e[0m'
+CYAN='\e[36m'
 
 case "${DIG_EXEC}" in
 DEFAULT|D)
