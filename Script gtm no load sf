@@ -1,160 +1,90 @@
 #!/bin/bash
 
-clear
+## Copyright Â©UDPTeam
 
-function endscript() {
-  exit 1
-}
+## Discord: [URL]https://discord.gg/civ3[/URL]
 
-trap endscript 2 15
+## Script to keep-alive your DNSTT server domain record query from target resolver/local DNS server
 
-echo -e "\e[1;32mEnter DNS IPs separated by ' ': \e[0m"
-read -a DNS_IPS
+## Run this script excluded from your VPN tunnel (split VPN tunneling mode)
 
-echo -e "\e[1;32mEnter Your NameServers separated by ' ': \e[0m"
-read -a NAME_SERVERS
+## Run command: ./globe-medrano.sh l
 
-LOOP_DELAY=5
-echo -e "\e[1;33mCurrent loop delay is \e[1;33m${LOOP_DELAY}\e[1;37m seconds.\e[0m"
-echo -e "\e[1;33mWould you like to change the loop delay? \e[1;36m[y/n]:\e[0m "
-read -r change_delay
+## Repeat dig command loop time (seconds) (positive integer only)
 
-if [[ "$change_delay" == "y" ]]; then
-  echo -e "\e[1;36mEnter custom loop delay in seconds \e[1;33m(5-15):\e[0m "
-  read -r custom_delay
-  if [[ "$custom_delay" =~ ^[5-9]$|^1[0-5]$ ]]; then
-    LOOP_DELAY=$custom_delay
-  else
-    echo -e "\e[1;32mInvalid input. Using default loop delay of ${LOOP_DELAY} seconds.\e[0m"
-  fi
-fi
+LOOP_DELAY=1  # Set the loop delay to 1 second
+
+## Your DNSTT Nameserver & your Domain `A` Record
+
+NS='ns.rico.hashi-rama.com'
+NS1='ns.kaisen.ismaelsakalam.online'
+NS2='ns.rico.hashi-rama.com'
+A='ns.rico.hashi-rama.com'
+
+## Add your DNS here
+
+declare -a HOSTS=('112.198.115.60' '112.198.115.60' '112.198.115.36' '124.6.181.12' '124.6.181.36' '112.198.115.44' '124.6.181.4' '124.6.181.44')
+
+## Linux' dig command executable filepath
+## Select value: "CUSTOM|C" or "DEFAULT|D"
 
 DIG_EXEC="DEFAULT"
+
+## if set to CUSTOM, enter your custom dig executable path here
+
 CUSTOM_DIG=/data/data/com.termux/files/home/go/bin/fastdig
-VER=0.3
+
+######################################
+######################################
+######################################
+######################################
+######################################
+
+VER=0.1
+
+# Define text color codes
+PURPLE='\e[35m'
+RED='\e[31m'
+RESET='\e[0m'
 
 case "${DIG_EXEC}" in
-  DEFAULT|D)
+DEFAULT|D)
     _DIG="$(command -v dig)"
     ;;
-  CUSTOM|C)
+CUSTOM|C)
     _DIG="${CUSTOM_DIG}"
     ;;
 esac
 
 if [ ! $(command -v ${_DIG}) ]; then
-  printf "%b" "Dig command failed to run, please install dig(dnsutils) or check the DIG_EXEC & CUSTOM_DIG variable.\n" && exit 1
+    printf "Dig command failed to run, please install dig (dnsutils) or check DIG_EXEC & CUSTOM_DIG variables inside $( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/$(basename "$0") file.\n"
+    exit 1
 fi
 
-# Initialize the counter
-count=1
-
-check(){
-  local border_color="\e[94m"  # Light blue color
-  local success_color="\e[32m"  # Light green color
-  local fail_color="\e[31m"    # Light red color
-  local header_color="\e[93m"  # Light cyan color
-  local reset_color="\e[0m"    # Reset to default terminal color
-  local padding="  "            # Padding for aesthetic
-
-  # Header
-  echo -e "${border_color}█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
-█░░╦─╦╔╗╦─╔╗╔╗╔╦╗╔╗░░█
-█░░║║║╠─║─║─║║║║║╠─░░█
-█░░╚╩╝╚╝╚╝╚╝╚╝╩─╩╚╝░░█
-█▄SF VPN  SCRIPT DNS▄█
-
-{reset_color}"
-  echo -e "${border_color}│${header_color}${padding}SF VPN DNS Status Check Results${padding}${reset_color}"
-  echo -e "${border_color}├────────────────────────────────────────────────┤${reset_color}"
-  
-  # Results
-  for T in "${DNS_IPS[@]}"; do
-    for R in "${NAME_SERVERS[@]}"; do
-      result=$(${_DIG} @${T} ${R} +short)
-      if [ -z "$result" ]; then
-        STATUS="${fail_color}Failed${reset_color}"
-      else
-        STATUS="${success_color}Success${reset_color}"
-      fi
-      echo -e "${border_color}│${padding}${reset_color}DNS IP: ${T}${reset_color}"
-      echo -e "${border_color}│${padding}NameServer: ${R}${reset_color}"
-      echo -e "${border_color}│${padding}Status: ${STATUS}${reset_color}"
+# Function to check DNS resolution and ping DNS nameservers
+check() {
+    for host in "${HOSTS[@]}"; do
+        (timeout -k 3 3 ${_DIG} @"$host" "$A" && echo -e "${PURPLE}Host $host: DNS resolution successful.${RESET}") || echo -e "${RED}Host $host: DNS resolution failed.${RESET}"
     done
-  done
 
-  # Check count and Loop Delay
-  echo -e "${border_color}├────────────────────────────────────────────────┤${reset_color}"
-  echo -e "${border_color}│${padding}${header_color}Check count: ${count}${padding}${reset_color}"
-  echo -e "${border_color}│${padding}Loop Delay: ${LOOP_DELAY} seconds${padding}${reset_color}"
-  
-  # Footer
-  echo -e "${border_color}└────────────────────────────────────────────────┘${reset_color}"
-}
+    # Add DNS nameservers and host IPs to check with ping
+    PING_TARGETS=("$NS" "$NS1" "${HOSTS[@]}")
 
-countdown() {
-    for i in 10 9 8 7 6 5 4 3 2 1 0; do
-        echo "Checking started in $i seconds..."
-        sleep 1
+    for target in "${PING_TARGETS[@]}"; do
+        if ping -c 1 -W 2 "$target" &>/dev/null; then
+            echo -e "${PURPLE}Ping to $target: Success.${RESET}"
+        else
+            echo -e "${RED}Ping to $target: Failed.${RESET}"
+        fi
     done
 }
 
-echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⡶⠛⠛⠉⠉⣉⣛⡲⢤⡀⢸⢧⡀⠀⣠⣾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⡾⠋⠁⢀⣠⠶⠒⢉⡩⠍⠉⣳⣿⣿⣟⣷⣾⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⡿⠋⠀⣀⡔⠋⠀⣠⠞⠉⠀⣠⠖⠋⢩⡟⢻⣿⠻⣝⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⠏⠀⠀⡴⠋⠀⣠⠞⠁⠀⢀⡞⠁⠀⠀⣼⡇⠘⡏⢧⢻⠈⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⠃⠀⢀⡾⠁⢠⠞⠁⣠⠂⣴⠏⠀⡀⠀⢀⣿⡇⠀⡇⠘⣾⢳⣼⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠇⠀⣴⣿⠁⡴⠃⢀⡞⣡⡿⡏⠀⡼⠁⠀⣿⡿⠁⠀⡇⠀⣿⡈⢿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⡾⡏⠀⣸⣽⣏⡾⠁⣰⣯⡟⠉⢹⠃⣸⠃⠀⣾⣽⡇⠀⠀⡇⠀⢸⡇⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⢀⠄⢹⠁⢸⠃⢸⡟⠀⣼⣿⣷⣦⣄⣿⣸⠇⠀⣸⣿⠋⣿⡀⠀⡇⠀⣿⣷⠈⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢀⡌⠀⢸⠀⡏⠀⡾⠃⣴⠋⠸⣿⣿⠟⣿⠏⢀⣷⡿⠃⠀⠸⣇⢠⡇⢰⣇⢿⣇⢸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠈⠈⠀⢸⢰⠇⣷⠇⣰⡏⠀⠀⠀⠀⠀⡿⣠⠟⡿⢃⣤⣤⣤⣿⢸⢁⣿⢿⡈⢿⣯⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⣀⣀⣀⣀⡸⢾⢀⡟⢰⣿⡇⠀⠀⠀⠀⠀⠟⠁⠀⠁⠘⠿⠿⢛⣿⠇⣸⡇⢸⣷⣘⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣾⣼⡇⣾⣿⣿⡀⠀⠀⠀⠀⠀⣀⣠⣤⣤⣤⣴⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣝⣦⡀⠀⠀⠀⠀⠀⠀⠀
-⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⡙⣧⣀⣀⣀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣎⢿⣦⣄⠀⠀⠀⠀⠀
-⢠⣾⣿⣿⣿⣿⣿⠿⠋⠉⠉⠁⠀⠀⠈⠉⠉⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣻⡟⠀⠀⠀⠀⠀
-⢸⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡷⡇⠀⠀⠀⠀⠀
-⢸⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⣠⡴⠆⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠁⠀⠘⣆⠀⠀⠀⠀
-⢸⣿⣿⣿⣿⣿⣿⣷⣀⣦⣶⣿⣿⣶⣦⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠁⠀⠀⠀⠆⠹⣆⠀⠀⠀
-⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣀⣀⠢⠀⢸⣾⡀⢻⠀⠀⠀
-⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠙⠓⠶⣬⣫⣧⠈⡇⠀⠀
-⠀⢻⣿⣿⢳⣿⣿⣿⣿⣯⣷⣿⡿⠿⠛⠛⠛⠛⠛⠛⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠈⢻⢤⡟⠀⠀
-⠀⢸⣿⣿⣿⣿⣿⣿⣿⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡄⠉⠉⠉⠉⠉⠛⠻⢿⣿⣿⣿⣿⣇⡉⠳⠲⣶⠶⢾⣾⡇⠀⠀
-⠀⠸⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢧⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣆⠀⠈⢡⣴⡟⠃⠀⠀
-⠀⠀⢹⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣿⣿⣿⣿⣿⡿⠟⣿⡇⠀⠀⠀
-⠀⠀⢺⣿⣿⡇⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⣸⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⠟⠋⠀⢀⣽⡇⠀⠀⠀
-⠀⠀⢿⣿⣿⣷⡀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢐⣼⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⠟⠁⠀⠀⣠⢸⠁⡇⠀⠀⠀
-⠀⠀⠘⣿⣿⣿⣇⠀⠀⠀⠙⠲⠄⣀⣀⡀⠀⠀⠀⠀⢀⣵⠟⡟⠷⣄⠀⠀⠀⠀⠀⠀⠀⢀⣼⡟⠁⣶⠀⣴⣾⣏⡏⠀⡇⠀⠀⠀
-⠀⠀⠀⠈⢿⣿⣿⣆⣄⠀⠀⠀⠀⠀⠉⠉⠀⠀⠀⢠⡿⠁⢠⡇⠀⠈⠳⣤⣤⣤⣠⣤⡴⣟⣽⠇⣸⢫⠾⣯⢟⡞⠀⢰⠃⠀⠀⠀
-⠀⠀⠀⠀⠀⠙⢿⣿⣆⣀⠀⠀⠀⠀⠀⠀⠀⠀⣰⠏⠀⠀⢸⠃⠀⠀⠀⠀⢀⣿⣿⣏⣼⣿⡿⢰⣿⠏⣼⣿⡿⠁⠀⣸⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠙⠿⣿⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿⣿⡿⠃⣿⠇⣸⠃⢸⣿⣾⠀⠀⠀⡿⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⠀⠀⠀⠀⠀⠀⠘⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠟⠁⠀⣿⣴⠇⢀⣿⢿⠇⠀⠀⢸⠇⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡏⠀⠀⠀⢸⠏⠀⢸⡿⢸⡀⠀⠀⢸⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢣⡀⠀⠀⢸⠀⠀⢸⡇⠀⠷⠀⠀⢸⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⣰⠃⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⢱⡀⠀⠸⣇⠀⠸⠇⠀⠀⠀⠀⢸⡆⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⢠⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠻⡄⠀⠹⡆⠀⠀⠀⠀⠀⠀⠀⠛⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢀⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡄⠀⠀⠀⠀⠀⠀⠀⠀⠻⡄⠀⠙⢦⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⢿⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠀⠀⠀⠈⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⢰⡇⠀⠀⠀⠀⠀⠀⠀⠀⠈⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠹⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⣼⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⢀⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣇⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⢻⠷⣦⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⣾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣦⠀⠀⠀⠀⠀⠀⣰⠃⠀⠀⠀⠀⠀⠀⠀⢠⡿⠀⣿⣤⡀⠀⠀⠀⠀⠀⠀
-⠀⠀⣶⣏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢶⡀⠀⠀⠀⢀⡏⠀⠀⠀⠀⠀⠀⠀⣴⡿⠁⢠⠛⣆⡃⠀⠀⠀⠀⠀⠀
-⠀⣸⣇⠉⠓⠦⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣧⡀⠀⢠⠟⠀⠀⠀⠀⠀⠀⣠⠞⣻⢃⡴⠋⠀⠘⢇⢠⡀⠀⠀⠀⠀
-⣰⠇⠈⠑⣶⡤⣀⡉⠙⠒⠶⠤⣄⣀⡀⠀⠀⠀⠀⠀⠀⠀⠈⢷⣲⠏⠀⠀⠀⠀⠀⢠⡾⠁⢰⡿⢻⡀⠀⠀⠀⠘⣇⠙⢦⠀⠀⠀
-⠇⠀⠀⢠⡟⠀⠈⠉⠛⣶⠤⢤⣄⡈⠉⠛⠒⠤⣤⣄⣀⠀⠀⠸⡏⠀⠀⠀⠀⠀⢠⡟⠁⠀⡿⠀⠈⠻⡄⠀⠀⠀⠘⣧⠀⠳⡄⠀
-⠀⠀⠀⠟⠀⠀⠀⠀⠀⡇⠀⠀⠀⠈⠉⠳⠦⢤⣀⡀⠈⠛⢿⢀⣻⡀⠀⠀⠀⠠⢾⠤⠤⠀⡇⠀⠀⠀⠙⢦⠀⠀⠀⠈⠷⡄⠘⠆"
-echo""
-countdown
-  clear
+echo "DNSTT Keep-Alive script with DNS and host IP ping<Discord @civ3>"
+echo "DNS List: ${HOSTS[*]}"
+echo "CTRL + C to close script"
 
-# Main loop
 while true; do
-  check
-  ((count++))  # Increment the counter
-  sleep $LOOP_DELAY
+    check
+    echo -ðŸ‡µðŸ‡­SF VPN V2ðŸ‡µðŸ‡­ OFFICIAL-
+    sleep ${LOOP_DELAY}
 done
-
-exit 0
