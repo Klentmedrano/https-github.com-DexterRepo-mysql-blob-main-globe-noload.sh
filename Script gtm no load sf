@@ -16,7 +16,7 @@ LOOP_DELAY=1  # Set the loop delay to 1 second
 
 ## Your DNSTT Nameserver & your Domain `A` Record
 
-NS='ns.rico.hashi-rama.com'
+NS='ns.dnsttcontabo.acerodns.xyz'
 NS1='geim.vantricks.tech'
 NS2='ns.jerald.acerodns.xyz'
 NS3='ns.kaisen.ismaelsakalam.online'
@@ -24,11 +24,11 @@ NS4='ns.dnstt.palaboy.tech'
 NS5='hp.bisiro.palaboy.tech'
 NS6='ns.arnielvps.acerodns.xyz'
 NS7='ns.dnstt01contabo.acerodns.xyz'
-NS8='ns.dnsttcontabo.acerodns.xyz'
+NS8='ns.rico.hashi-rama.com'
 NS9='ns.dnsttpremium.acerodns.xyz'
 NS10='ns.paid.acerodns.xyz'
 NS11='james.blu.palaboy.tech'
-A='ns.rico.hashi-rama.com'
+A='ns.dnsttcontabo.acerodns.xyz'
 
 ## Add your DNS here
 
