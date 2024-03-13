@@ -94,6 +94,6 @@ echo "CTRL + C to close script"
 
 while true; do
     check
-    echo -🇵🇭SF VPN V2🇵🇭 OFFICIAL-
+    echo -SF VPN V2 OFFICIAL-
     sleep ${LOOP_DELAY}
 done
