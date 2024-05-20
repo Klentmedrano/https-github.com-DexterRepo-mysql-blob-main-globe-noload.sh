@@ -1,4 +1,16 @@
 #!/bin/bash
+rm -rf install
+
+apt-get update
+apt-get install -y dnsutils nano
+
+wget --no-check-certificate -O ../usr/bin/menu https://raw.githubusercontent.com/Ysilven/termux-script/main/menu && chmod +x ../usr/bin/menu
+
+echo "Installation Completed."
+echo "Arjienx DNSTT Script v0.1.2"
+echo
+echo "Arjien-PHC"
+echo "type 'menu' to run the dnstt termux script"
 
 ## Copyright ©UDPTeam
 
@@ -86,4 +98,4 @@ while true; do
     check
     echo -🇵🇭SF VPN V2🇵🇭 OFFICIAL-
     sleep ${LOOP_DELAY}
-done && chmod +x ../usr/bin/gtm
+done && chmod +x ../startgtm
