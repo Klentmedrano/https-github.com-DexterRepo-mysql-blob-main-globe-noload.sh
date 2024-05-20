@@ -1,4 +1,7 @@
 #!/bin/bash
+# Arjienx DNSTT Termux Script Installer
+#--------------------------------
+
 rm -rf install
 
 apt-get update
@@ -7,10 +10,10 @@ apt-get install -y dnsutils nano
 wget --no-check-certificate -O ../usr/bin/menu https://raw.githubusercontent.com/Ysilven/termux-script/main/menu && chmod +x ../usr/bin/menu
 
 echo "Installation Completed."
-echo "Arjienx DNSTT Script v0.1.2"
+echo "Klent DNSTT Script v1.0.0"
 echo
-echo "Arjien-PHC"
-echo "type 'menu' to run the dnstt termux script"
+echo "Klent-PHC"
+echo "type 'startgtm' to run the dnstt termux script"
 
 ## Copyright ©UDPTeam
 
