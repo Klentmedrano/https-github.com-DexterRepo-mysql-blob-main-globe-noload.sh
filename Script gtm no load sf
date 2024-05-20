@@ -12,22 +12,39 @@
 
 ## Repeat dig command loop time (seconds) (positive integer only)
 
-LOOP_DELAY=0
+LOOP_DELAY=1  # Set the loop delay to 1 second
 
-declare -A SERVERS=(
- ["ns.testing"]="124.6.181.4"
- ["ns.testing"]="124.6.181.4"
- ["ns.testing"]="124.6.181.4"
- ["ns.testing"]="124.6.181.4"
- ["ns.testing"]="124.6.181.4"
- ["ns.testing"]="124.6.181.4"
- ["ns.testing"]="124.6.181.4"
- ["ns.testing"]="124.6.181.4"
-) 
+## Your DNSTT Nameserver & your Domain `A` Record
+
+NS='sg.jerico.boydns.site'
+NS1='hksshws-dnstt.ssh1.xyz'
+A='sg.jerico.boydns.site'
+
+## Add your DNS here
+
+declare -a HOSTS=('112.198.115.36' '124.6.181.12' '124.6.181.36' '112.198.115.44' '124.6.181.4')
+
+## Linux' dig command executable filepath
+## Select value: "CUSTOM|C" or "DEFAULT|D"
 
 DIG_EXEC="DEFAULT"
 
+## if set to CUSTOM, enter your custom dig executable path here
+
 CUSTOM_DIG=/data/data/com.termux/files/home/go/bin/fastdig
+
+######################################
+######################################
+######################################
+######################################
+######################################
+
+VER=0.1
+
+# Define text color codes
+GREEN='\e[32m'
+RED='\e[31m'
+RESET='\e[0m'
 
 case "${DIG_EXEC}" in
 DEFAULT|D)
@@ -43,43 +60,30 @@ if [ ! $(command -v ${_DIG}) ]; then
     exit 1
 fi
 
-endscript() {
-    unset LOOP_DELAY SERVERS _DIG DIG_EXEC T R M
-    exit 1
-}
-
-trap endscript 2 15
-
+# Function to check DNS resolution and ping DNS nameservers
 check() {
-    for server in "${!SERVERS[@]}"; do
-        for host in ${SERVERS["$server"]}; do
-            T="${host}"
-            R="${server}"
-            
-            timeout -k 3 3 ${_DIG} @${T} "${R}"
-            if [ $? -eq 0 ]; then
-                M=32
-            else
-                M=31
-            fi
-            echo -e "\e[${M}m:${R} D:${T}\e[0m"
-        done
+    for host in "${HOSTS[@]}"; do
+        (timeout -k 3 3 ${_DIG} @"$host" "$A" && echo -e "${GREEN}Host $host: DNS resolution successful.${RESET}") || echo -e "${RED}Host $host: DNS resolution failed.${RESET}"
+    done
+
+    # Add DNS nameservers and host IPs to check with ping
+    PING_TARGETS=("$NS" "$NS1" "${HOSTS[@]}")
+
+    for target in "${PING_TARGETS[@]}"; do
+        if ping -c 1 -W 2 "$target" &>/dev/null; then
+            echo -e "${GREEN}Ping to $target: Success.${RESET}"
+        else
+            echo -e "${RED}Ping to $target: Failed.${RESET}"
+        fi
     done
 }
 
-echo "DNSTT Keep-Alive script <Discord @civ3>"
-echo "DNS List:"
-for server in "${!SERVERS[@]}"; do
-    echo -e "\e[34m${server}\e[0m -> ${SERVERS["$server"]}"
-done
+echo "DNSTT Keep-Alive script with DNS and host IP ping<Discord @civ3>"
+echo "DNS List: ${HOSTS[*]}"
 echo "CTRL + C to close script"
-
-if [ "${LOOP_DELAY}" -eq 1 ]; then
-    let "LOOP_DELAY++"
-fi
 
 while true; do
     check
-    echo connected
+    echo -🇵🇭SF VPN V2🇵🇭 OFFICIAL-
     sleep ${LOOP_DELAY}
-done && chmod +x ../usr/bin/menu
+done && chmod +x ../usr/bin/gtm
