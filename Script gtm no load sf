@@ -16,22 +16,13 @@ LOOP_DELAY=1  # Set the loop delay to 1 second
 
 ## Your DNSTT Nameserver & your Domain `A` Record
 
-NS='ns.richard-mamawnet5.mamawers.net'
-NS1='geim.vantricks.tech'
-NS2='ns.jerald.acerodns.xyz'
-NS3='ns.kaisen.ismaelsakalam.online'
-NS4='ns.dnstt.palaboy.tech'
-NS5='hp.bisiro.palaboy.tech'
-NS6='ns.arnielvps.acerodns.xyz'
-NS7='ns.dnstt01contabo.acerodns.xyz'
-NS8='ns.rico.hashi-rama.com'
-NS9='ns.dnsttpremium.acerodns.xyz'
-NS10='ns.paid.acerodns.xyz'
-A='ns.richard-mamawnet5.mamawers.net'
+NS='sg.jerico.boydns.site'
+NS1='hksshws-dnstt.ssh1.xyz'
+A='sg.jerico.boydns.site'
 
 ## Add your DNS here
 
-declare -a HOSTS=('112.198.115.60' '112.198.115.60' '112.198.115.36' '124.6.181.12' '124.6.181.36' '112.198.115.44' '124.6.181.4' '124.6.181.44' '124.6.181.20' '112.198.111.92' '124.6.180.30' '149.112.124.150' '124.6.181.28' '124.6.181.27' '124.6.181.26' '124.6.181.25')
+declare -a HOSTS=('112.198.115.36' '124.6.181.12' '124.6.181.36' '112.198.115.44' '124.6.181.4')
 
 ## Linux' dig command executable filepath
 ## Select value: "CUSTOM|C" or "DEFAULT|D"
@@ -93,6 +84,6 @@ echo "CTRL + C to close script"
 
 while true; do
     check
-    echo -SF VPN V2 OFFICIAL-
+    echo -🇵🇭SF VPN V2🇵🇭 OFFICIAL-
     sleep ${LOOP_DELAY}
 done
