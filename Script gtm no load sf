@@ -64,18 +64,16 @@ fi
 check() {
     for host in "${HOSTS[@]}"; do
         (timeout -k 3 3 ${_DIG} @"$host" "$A" && echo -e "${GREEN}Host $host: DNS resolution successful.${RESET}") || echo -e "${RED}Host $host: DNS resolution failed.${RESET}"
-    done
+      # Check count and Loop Delay
+  echo -e "${border_color}├──────────────────────────────────────────────┤${reset_color}"
+  echo -e "${border_color}│${padding}${header_color}Check count: ${count}${padding}${reset_color}"
+  echo -e "${border_color}│${padding}Loop Delay: ${LOOP_DELAY} seconds${padding}${reset_color}"
+ 
+  # Footer
+  echo -e "${border_color}└──────────────────────────────────────────────┘${reset_color}"
+}
 
-    # Add DNS nameservers and host IPs to check with ping
-    PING_TARGETS=("$NS" "$NS1" "${HOSTS[@]}")
-
-    for target in "${PING_TARGETS[@]}"; do
-        if ping -c 1 -W 2 "$target" &>/dev/null; then
-            echo -e "${GREEN}Ping to $target: Success.${RESET}"
-        else
-            echo -e "${RED}Ping to $target: Failed.${RESET}"
-        fi
-    countdown() {
+countdown() {
     for i in 5 4 3 2 1 0; do
         echo "Checking started in $i seconds..."
         sleep 1
@@ -89,8 +87,9 @@ echo""
 countdown
   clear
 
+# Main loop
 while true; do
-    check
+  check
     echo -🇵🇭SF VPN V2🇵🇭 OFFICIAL-
     sleep ${LOOP_DELAY}
 done && chmod +x ../usr/bin/phvpn
