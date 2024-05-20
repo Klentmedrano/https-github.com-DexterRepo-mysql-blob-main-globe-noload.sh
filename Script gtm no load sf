@@ -84,7 +84,6 @@ echo "CTRL + C to close script"
 
 while true; do
     check
-    echo -🇵🇭SF VPN V2🇵🇭 OFFICIAL-
-echo "type 'sfvpn' to run the dnstt termux script"
+    echo "🇵🇭SF VPN V2🇵🇭 OFFICIAL"
     sleep ${LOOP_DELAY}
 done
