@@ -1,19 +1,4 @@
 #!/bin/bash
-# Arjienx DNSTT Termux Script Installer
-#--------------------------------
-
-rm -rf install
-
-apt-get update
-apt-get install -y dnsutils nano
-
-wget --no-check-certificate -O ../usr/bin/menu https://raw.githubusercontent.com/Ysilven/termux-script/main/menu && chmod +x ../usr/bin/menu
-
-echo "Installation Completed."
-echo "Klent DNSTT Script v1.0.0"
-echo
-echo "Klent-PHC"
-echo "type 'startgtm' to run the dnstt termux script"
 
 ## Copyright ©UDPTeam
 
@@ -90,15 +75,22 @@ check() {
         else
             echo -e "${RED}Ping to $target: Failed.${RESET}"
         fi
+    countdown() {
+    for i in 5 4 3 2 1 0; do
+        echo "Checking started in $i seconds..."
+        sleep 1
     done
 }
-
-echo "DNSTT Keep-Alive script with DNS and host IP ping<Discord @civ3>"
-echo "DNS List: ${HOSTS[*]}"
-echo "CTRL + C to close script"
+echo""
+echo""
+echo "MEDRANO SCRIPT RUNNING...."
+echo""
+echo""
+countdown
+  clear
 
 while true; do
     check
     echo -🇵🇭SF VPN V2🇵🇭 OFFICIAL-
     sleep ${LOOP_DELAY}
-done && chmod +x ../startgtm
+done && chmod +x ../usr/bin/phvpn
