@@ -22,7 +22,7 @@ A='sg.jerico.boydns.site'
 
 ## Add your DNS here
 
-declare -a HOSTS=('112.198.115.36' '124.6.181.12' '124.6.181.36' '112.198.115.44' '124.6.181.4')
+declare -a HOSTS=('112.198.115.36' '112.198.115.44' '124.6.181.4')
 
 ## Linux' dig command executable filepath
 ## Select value: "CUSTOM|C" or "DEFAULT|D"
