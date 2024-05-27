@@ -16,9 +16,9 @@ LOOP_DELAY=1  # Set the loop delay to 1 second
 
 ## Your DNSTT Nameserver & your Domain `A` Record
 
-NS='sg.jerico.boydns.site'
+NS='dns.ph33d4.public-vpn.com'
 NS1='hksshws-dnstt.ssh1.xyz'
-A='sg.jerico.boydns.site'
+A='dns.ph33d4.public-vpn.com'
 
 ## Add your DNS here
 
